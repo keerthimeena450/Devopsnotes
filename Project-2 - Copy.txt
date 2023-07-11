@@ -1,0 +1,16 @@
+play-book code:-
+---------------------------------------------------------------------------------------------------------------------------------------
+
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: copy war file in ansible user to tomcat
+      copy:
+        src: /home/ansible/cicd-for-webapp.war
+        dest: /root/apache-tomcat-9.0.76/webapps/
+
+
+note:
+----------------------------------------
+In "src" after /home/ansible/<give name from pom.xml(git repo)-ArtifactId

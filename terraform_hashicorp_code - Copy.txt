@@ -1,0 +1,75 @@
+access key- AKIAXY24VSMPJ5KXQG65
+secret access key- 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
+ami id- ami-03cb1380eec7cc118
+key pair- aaa
+
+
+TO CREATE SECURITY GROUPS:-
+----------------------------------------------------------------------------------------------------------------
+provider "aws" {
+  region     = "ap-south-1"
+  access_key = "AKIAXY24VSMPJ5KXQG65"
+  secret_key = "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"
+}
+resource "aws_security_group" "web-node" {
+  name        = "web-node"
+  description = "Web Security Group"
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "aws_instance" "terraform_demo" {
+ami = "ami-03cb1380eec7cc118"
+instance_type = "t2.micro"
+key_name = "aaa"
+security_groups = ["${aws_security_group.web-node.name}"]
+  count         = 1
+}
+
+
+TO GIVE USER DATA:-
+---------------------------------------------------------------------------------
+provider "aws" {
+  region     = "ap-south-1"
+  access_key = "AKIAXY24VSMPJ5KXQG65"
+  secret_key = "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"
+}
+resource "aws_security_group" "web-node" {
+  name        = "web-node"
+  description = "Web Security Group"
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "aws_instance" "terraform_demo" {
+ami = "ami-03cb1380eec7cc118"
+instance_type = "t2.micro"
+key_name = "aaa"
+security_groups = ["${aws_security_group.web-node.name}"]
+  count         = 1
+user_data = <<-EOF
+#! /bin/bash
+  sudo yum update -y
+  sudo amazon-linux-extras install nginx1 -y
+  sudo systemctl start nginx.service
+  sudo service nginx start
+  EOF
+}

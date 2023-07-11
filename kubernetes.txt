@@ -1,0 +1,71 @@
+steps :-
+
+1) install 2 instance master, worker
+
+2) Instance requirement:-
+------------------------------------------------------------------------------------------------------------------------------------------
+AMI type= ubuntu 22.04
+instance type= t2.medium-> (4cpu, 4gb), security group- all traffic
+in mobaxtrem we have to given "user name" as ubuntu
+
+3)install kebernetes in both terminals(Mobaxtrem)
+
+Installation steps of kubernetes:-
+------------------------------------------------------------------------------------------------------------------------------------------
+a) vi kubernetes.sh
+
+#!/bin/bash
+# Swap memory
+swapoff -a
+# Install Docker
+sudo apt-get update
+sudo apt-get install -y\
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+# Install Kubernetes
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+#sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-get install -y kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 #--allow-change-held-packages
+sudo apt-mark hold kubelet kubeadm kubectl
+
+b) sh kubernetes.sh
+will ask permission type -> enter
+
+kubectl get nodes:- To know connected nodes to pod
+
+c) master instance:-
+----------------------------------------------------------
+sudo kubeadm init :-to initialize k8s cluster
+
+it will display 3 commands satrt with "mkdir -p $HOME/.kube....." copy paste those 
+
+d) copy full "kubeadm join ....." command and paste it in(WORKER NODE)
+
+sudo <paste>
+
+e) kubectl get nodes :- to know connected nodes
+
+f) # CNI Plugin Installation: (run in master node)
+ kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+
+g) To set hostname on terminal:-
+
+sudo hostnamectl set-hostname kmaster<new name>
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+

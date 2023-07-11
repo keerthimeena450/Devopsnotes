@@ -1,0 +1,59 @@
+direct script pipeline:-
+------------------------------------------------------------------------------------------------------------------------------------------
+pipeline  
+{
+    agent any
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('git clone') {
+            steps {
+                git 'https://github.com/ajit40/maven-integration-sak.git'
+            }
+        }
+        stage('compile') {
+            steps {
+                sh "mvn compile"
+            }
+        }
+        stage('test') {
+            steps {
+                sh "mvn test"
+            }
+        }
+    }
+}
+
+
+
+declarative mode:-
+------------------------------------------------------------------------------------------------------------------------------------------
+
+pipeline  
+{
+    agent any
+    tools {
+        maven 'maven'
+    }
+    stages {
+        stage('compile') {
+            steps {
+                sh "mvn compile"
+            }
+        }
+        stage('test') {
+            steps {
+                sh "mvn test"
+            }
+        }
+    }
+}
+
+
+personal token:-------------------------------------------------------------------------------------------------------------------------
+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
+
+
+fine-grained token:----------------------------------------------------------------------------------------------------------------------
+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

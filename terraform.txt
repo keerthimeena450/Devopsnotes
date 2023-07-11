@@ -1,0 +1,138 @@
+Terraform Architecture(flow):
+____________________________________________________
+
+init--->plan-->apply-->destroy
+
+
+terraform installation steps:-
+--------------------------------------------------------------------------------------------------------------------------------------------
+1) Instance requirement:- AMI-amazon linux kernel 2, instance type- t2.micro, security groups- all
+
+2) AWS-> IAM-> user-> create user-> give user name, tick "provide user access box", select "i want to create an IAM user".
+Attach policies-> AdministratorAccess-> NEXT -> download .CSV file-> save.
+
+Click on "user" -> security credential-> Access key-> select Command-line-interface(CLI) -> click on "create access key" -> check/tick the below box -> next -> click on "create access key"
+COPY access key, secret access key, click on instance-> copy AMI iD and Key pair in notepad to paste in "HASICORP CODE".  
+
+example:
+----------------------------------------------------------
+access key- AKIAXY24VSMPJMIUC2BQ
+secret access key- DprrHoAkAMHEqVX9j89+X5wju7UqlUzdAgrrh1Pr
+AMI ID- ami-03cb1380eec7cc118
+key pair- aaa
+
+3) Go to browser "download terraform" click on "hashicorp.com" link in that click on linux in that amazon linux from that copy  3 line code.
+--------------------------------------------------------------------------------------------------------------------------------------------
+1. sudo yum install -y yum-utils shadow-utils
+2. sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+3. sudo yum -y install terraform
+
+4) terraform --version      	//to check version of the terraform
+
+NOTE:->
+     For new tasks we have to create new directory for writing a file which will contain provider and resource. If you don't want to create 
+new directory then you have to delete previous provider and resource data.
+
+5) mkdir <folder name>
+
+6) cd <folder name>
+
+7) vi terraform.tf (paste hashicorp code or type it here) esc+wq
+
+8) terraform init          	//to initialize terraform
+
+9) terraform play  		//to check blue-print or plan
+
+10) terraform apply		//to execute hashi-corp code
+
+11) terraform destroy		//to delete hashi-corp code
+
+
+Hashicorp code to create 3 instance using terraform:-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+provider "aws" {
+  region     = "ap-south-1"				//instance region
+  access_key = "AKIAT7YTY4AWIJKKHIA5"
+  secret_key = "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"
+}
+resource "aws_instance" "terraform_demo" {
+ami = "ami-03cb1380eec7cc118"
+instance_type = "t2.micro"
+key_name = "1stmumbai"					//keypair name
+count = "3"						//instance count to be created
+}
+
+
+Hashicorp code to create security group to instace using terraform:-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+provider "aws" {
+  region     = "ap-south-1"
+  access_key = "AKIAT7YTY4AWIJKKHIA5"
+  secret_key = "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"
+}
+resource "aws_security_group" "web-node" {
+  name        = "web-node"
+  description = "Web Security Group"
+  ingress {                                                         	//ingress means inbond rules
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {								//egress meand outbond rules
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "aws_instance" "terraform_demo" {
+ami = "ami-03cb1380eec7cc118"
+instance_type = "t2.micro"
+key_name = "1stmumbai"
+security_groups = ["${aws_security_group.web-node.name}"]
+  count         = 1
+}
+
+
+
+Hashicorp code to give user data to the instance using terraform:-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+provider "aws" {
+  region     = "ap-south-1"
+  access_key = "AKIAT7YTY4AWIJKKHIA5"
+  secret_key = "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"
+}
+resource "aws_security_group" "web-node" {
+  name        = "web-node"
+  description = "Web Security Group"
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "aws_instance" "terraform_demo" {
+ami = "ami-03cb1380eec7cc118"
+instance_type = "t2.micro"
+key_name = "1stmumbai"
+security_groups = ["${aws_security_group.web-node.name}"]
+  count         = 1
+user_data = <<-EOF
+#! /bin/bash
+  sudo yum update -y
+  sudo amazon-linux-extras install nginx1 -y
+  sudo systemctl start nginx.service
+  sudo service nginx start
+  EOF
+}
+
+
+

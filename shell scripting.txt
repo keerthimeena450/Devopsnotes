@@ -1,0 +1,752 @@
+1.Looping Statements :
+------------------------------------------------------------------------------------------------------------------------------------------
+3 types :
+------------------------------------------------------------------------------------------------------------------------------------------
+1.For loop
+2.While Loop
+3.until loop
+
+WAP to print 1 to 10
+------------------------------------------------------------------------------------------------------------------------------------------
+for sum in {1..10}
+do
+echo $sum
+done
+
+------------------------------------------------------------------------------------------------------------------------------------------
+WAP to print 10 to 1
+------------------------------------------------------------------------------------------------------------------------------------------
+for sum in {10..1}
+do
+echo $sum
+done
+
+------------------------------------------------------------------------------------------------------------------------------------------
+WAP to print a to z
+------------------------------------------------------------------------------------------------------------------------------------------
+for sum in {a..z}
+do
+echo $sum
+done
+
+------------------------------------------------------------------------------------------------------------------------------------------
+WAP to print 5 table
+------------------------------------------------------------------------------------------------------------------------------------------
+init=5
+for table in {1..10}
+do
+echo $init*$table=$((table * init))
+done
+
+To list the files :
+------------------------------------------------------------------------------------------------------------------------------------------
+for i in *
+do
+echo $i
+done
+
+
+To display only specific kind of extension :
+------------------------------------------------------------------------------------------------------------------------------------------
+for i in $(ls *.sh)
+do
+echo $i
+done
+
+===============================================================================
+Conditional Statements :
+------------------------------------------------------------------------------------------------------------------------------------------
+As the name suggest it will get execute based on the conditions
+1.if statement
+2.if-else statement
+3.else-if statement
+
+
+1.if statement :
+------------------------------------------------------------------------------------------------------------------------------------------
+If the condition is true then only it will execute the task..
+syntax :-
+--------------------------
+if condition
+then
+statement
+fi
+
+Example :
+------------------------------------------------------------------------------------------------------------------------------------------
+1) echo enter the number
+read number
+if [ $number -lt 100 ]
+then
+printf $number is less than 100
+fi
+
+→ 2)
+echo enter the number
+read number
+if [ $number -le 100 ]
+then
+echo $number is less than or equal to 100
+fi
+
+
+3) #!/bin/bash
+echo enter the number
+read number
+if [ $number -lt 100 ]
+then
+echo $number is less than 100
+else
+echo $number is Greater than 100
+fi
+
+===============================================================================
+if-else :
+------------------------------------------------------------------------------------------------------------------------------------------
+If the condition is true then it will print if statement if the condition is false then it will execute else part
+echo enter name
+read name
+if [[ $name == "Jspiders" ]]
+then
+echo "you were right"
+else
+echo "better luck next time"
+fi
+
+1) echo enter the value
+read number
+if [ $number -ne 50 ]
+then
+echo $number is not equal  to 50
+fi
+
+------------------------------------------------------------------------------------------------------------------------------------------
+By using if-else statements evaluate Even-odd numbers...
+------------------------------------------------------------------------------------------------------------------------------------------
+1) #!/bin/bash
+echo "enter the number"
+read number
+if [ `expr $number % 2 ` == 1 ]
+then
+echo "the number is odd"
+else
+echo "even"
+fi
+or
+#!/bin/bash
+echo "enter the number"
+read number
+if [ $((number % 2)) == 1 ]
+then
+echo "the number is odd"
+else
+echo "even"
+fi
+
+
+2) echo enter the value
+read number
+echo enter the value2
+read number2
+if [ $number -gt $number2 ]
+then
+echo $number is greaterthan $number2
+else
+echo $number2 is greater
+fi
+
+3) echo "enter the number"
+read num
+for((i=1;i<=num;i++))
+do
+for((j=1;j<=i;j++))
+do
+echo -n "*"
+done
+echo " "
+done
+
+4)echo enter class name
+read class
+if [[ $class = "operation class" ]]
+then
+echo "welcome to class"
+else
+echo "get lost"
+fi
+
+5) echo enter class name
+read class
+if [ $class "operation_class"]
+then
+echo"welcome to class"
+else
+echo "get lost"
+fi
+
+6) echo "Enter a first  value"
+read value1
+echo "Enter a second value"
+read value2
+if [ $value1 -eq $value2 ]
+then
+        echo "Both are equal"
+else
+        echo "Both are diffrent"
+fi
+
+
+7)echo enter the value
+read number
+if [ $number -gt 100 ]
+then
+echo $number is greater than 100
+else
+echo $number2 is lesser than 100
+fi
+
+8) echo enter the number
+read number
+if [ $number -lt 0 ]
+then
+echo $number is Negative
+else
+echo $number is Positive
+fi
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Else-if :
+------------------------------------------------------------------------------------------------------------------------------------------
+If the condition get false then it will check one more condition
+
+1) #!/bin/bash
+echo "enter the number"
+read number
+if [ `expr $number % 2` == 0 ]
+then
+echo "the number is even"
+elif [ `expr $number % 2` == 1 ]
+then
+echo "the number is odd"
+fi
+or
+#!/bin/bash
+echo "enter the num"
+read num
+if [ $(( num % 2 )) == 0 ]
+then
+echo "the num is even"
+elif [ $(( num % 2 )) == 1 ]
+then
+echo "the num is odd"
+fi
+
+
+2) echo the number
+read number
+if [ `expr $number` -gt 9 ]
+then
+echo double digit
+else
+echo single digit
+fi
+
+3)echo "enter the range"
+read number
+if [ $number -gt 10 ]
+then
+  if [ $number -gt 50 ]
+    then
+     if [ $number -gt 100 ]
+       then
+echo "number is grater then 100"
+fi
+else
+echo "number is in between 11 to 50"
+fi
+else
+echo "number is less then or equal to 10"
+fi
+
+4)echo "enter the value"
+read number
+if [ $((number % 2)) -eq 0 ]
+then
+        echo "num is even"
+elif [ $((number % 2)) -eq 1 ]
+then
+        echo "num is odd"
+fi
+6:20
+enter the value
+55
+num is odd
+
+
+5)echo enter the marks
+read marks
+if [ `expr $marks` -gt 85 ]
+then
+echo distinction
+elif [ `expr $marks` -gt 60 ]
+then
+echo first class
+elif [ `expr $marks` -gt 35 ]
+then
+echo just pass
+else
+echo fail
+fi
+
+
+
+6) C=1
+while [ $c-le 5 ]
+do
+echo "welcome $c times"
+((  c++  ))
+done
+Output
+welcome 1 times
+welcome 2 times
+welcome 3 times
+welcome 4 times
+ welcome 5 times
+
+
+pavan s n
+  6:28 PM
+out put --> enter the marks
+87
+distinction
+enter the marks
+65
+first class
+enter the marks
+36
+just pass
+enter the marks
+33
+fail
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+While Loop
+-----------------------------------------------------------------------------------------------------------------------------
+Syntax :
+---------
+while condition
+do
+{
+statements
+}
+done
+Example :
+------------------------------------------------------------------------------------------------------------------------------------------
+init=3
+while [[ $init -le 10 ]]
+do
+echo $init
+((init++))
+done
+
+
+echo "Enter the value"
+read value
+ while [[ $value -ne 0 ]]
+ do
+         l=$((value % 10))
+         sum=$((sum * 10 + l))
+         ((value = $((value / 10))))
+ done
+ echo $sum
+:raised_hands:
+1
+
+o/p:-
+Enter the value
+1234
+4321
+
+
+#!/bin/bash
+echo "Enter more than two digit number"
+read no
+while [ $no -ne 0 ]
+do
+rem=$no%10
+sum=$((sum + rem))
+no=$((no/10))
+done
+echo sum of each digit of given number is $sum
+:raised_hands:
+3
+
+-----------------------------------------------------------------------------------------------------------------------------
+One line for loop
+-----------------------------------------------------------------------------------------------------------------------------
+1) #!/bin/bash
+for i in {1..5}; do echo "number: $i"; done
+
+2) n=1
+while [ $n -le 5 ]
+do
+echo "enter one variable"
+read var
+if [ $var -lt 0 ]
+then
+break
+fi
+n=$(( n + 1 ))
+echo $n
+done
+echo  "loop breaks for negative no"
+
+
+3)To copy files from one to another directory
+(first create dir → run this command)
+#!/bin/bash
+for i in *; do cp $i /root/sak; done
+
+4)To copy all files from one directory to another directory
+#!/bin/bash
+for i in /etc/*.conf; do cp $i /root/sak1; echo "work done"; done
+
+----------------------------------------------------------------------------------------------------------------------------
+To check files
+—---------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+if [ -f /root/demo.sh ]
+then
+echo "File exists."
+else
+echo "file not exists"
+fi
+
+Example → 1
+===============================================================================
+echo "enter a fruit name"
+read fruit
+case $fruit in
+apple)
+echo "this a apple"
+;;
+orange)
+echo "this is orange"
+;;
+mango)
+echo "this is mango"
+;;
+*)
+echo "the fruit is not available"
+;;
+esac
+
+
+2) echo enter the name of course
+read course
+case $course in
+        devops)
+                echo available
+                ;;
+        java)
+                echo available
+                ;;
+        datastructure)
+                echo not available
+                ;;
+        *)
+                echo invalid course
+                ;;
+        esac
+
+
+3) #!/bin/bash
+echo "enter the number to print the daimond pattern"
+read number
+space=$number;	
+	  star=1;
+	     for(( i=1;i<=$number;i++ ))
+		 do
+	    	for((j=1;j<=$space;j++))
+			do
+	    		printf " ";
+				done
+	    		for((k=1;k<=$star;k++))
+				do
+	    			 printf "* ";	
+	    		done
+	    		echo
+	    		((star++));
+	        	((space--));
+	    	done
+
+4) To check directory
+—---------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+if [ -d “sak/” ]
+then
+echo "Directory exists"
+fi
+
+
+5)
+echo "enter your choice"
+read calculate
+a=10
+b=20
+case $calculate in
+addition)
+echo $a+$b is $((a + b))
+;;
+substraction)
+echo echo $b-$a is $((b - a))
+;;
+division)
+echo echo $b/$a is $((b / a))
+;;
+multiplication)
+echo echo $a*$b is $((a * b))
+;;
+*)
+echo "this is not available"
+;;
+esac
+
+
+Sreenidhi Palimar
+  6:52 PM
+[ec2-user@ip-172-31-34-232 ~]$ echo "Enter the num1"
+Enter the num1
+[ec2-user@ip-172-31-34-232 ~]$ read num1
+10
+[ec2-user@ip-172-31-34-232 ~]$ echo "Enter the num2"
+Enter the num2
+[ec2-user@ip-172-31-34-232 ~]$ read num2
+20
+[ec2-user@ip-172-31-34-232 ~]$ echo "Enter the operation"
+Enter the operation
+[ec2-user@ip-172-31-34-232 ~]$ add
+-bash: add: command not found
+[ec2-user@ip-172-31-34-232 ~]$ read operation
+add
+[ec2-user@ip-172-31-34-232 ~]$ case $operation in
+> add)
+> echo $((num1+num2))
+> ;;
+> sub)
+> echo $((num1-num2))
+> ;;
+> mul)
+> echo $((num1*num2))
+> ;;
+> div)
+> echo $((num1/num2))
+> ;;
+> *)
+> echo "invalid operation"
+> ;;
+> esac
+30 (edited) 
+
+
+Bijan kumar Dey
+  7:01 PM
+echo "enter a num1"
+read num1
+echo enter a num2
+read num2
+echo enter a symbol
+read symbol
+case $symbol in
++)
+        echo $((num1 + num2))
+;;
+\*)
+        echo $((num1 * num2))
+;;
+/)
+        echo $((num1 / num2))
+;;
+-)
+        echo $((num1 - num2))
+;;
+%)
+        echo $((num1 % num2))
+;;
+esac
+
+
+Dhinesh Mr
+  7:03 PM
+echo enter the num value
+read num
+read num1
+echo  enter your operation
+read operation
+case $operation in
+addition)
+echo $((num + num1))
+;;
+Multiplication)
+echo $((num * num1))
+;;
+substraction)
+echo $((num -  num1))
+;;
+division)
+echo $((num % num1))
+;;
+esac
+
+
+=============================================================================================================================
+Functions :
+=============================================================================================================================
+Function is a group of statement it will get execute whenever it is called or invoked
+----------------------------------------------------------------------------------------------------------------------------
+Example : 1 (Method)
+-----------------------------------------------------------------------------------------------------------------------------
+→  static value
+sum()
+{
+echo “the values are”
+a=10
+b=20
+x=`expr $a + $b`      #command line arguments
+echo $x
+}
+sum  # → method calling
+
+
+→ dynamic value
+sum()
+{
+echo add values for a and b
+read a
+read b
+x=`expr $a + $b`      #command line arguments
+echo $x
+}
+sum   # → method calling
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+Example : 2 (Method with parameter)
+-----------------------------------------------------------------------------------------------------------------------------
+→ static value
+
+#!/bin/bash
+sum()
+{
+        echo "printing"
+        c=$(($1 + $2 + $3))
+        echo $c
+}
+echo "enter the data here"
+sum 10 20 30
+
+→ dynamic input
+#!/bin/bash
+sum()
+{
+        echo "printing"
+        c=$(($1 + $2 + $3))
+        echo $c
+}
+echo "enter the data here"
+read a
+read b
+read c
+sum a b c
+
+
+
+echo "enter the next vowel"
+read vowel
+case $vowel in
+a)
+echo e
+;;
+e)
+echo i
+;;
+i)
+echo o
+;;
+o)
+echo u
+;;
+u)
+echo a
+;;
+esac
+
+-----------------------------------------------------------------------------------------------------------------------------
+Example 2 :
+-----------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+# nginx :- install,configure
+install()
+{
+echo "installing nginx"
+echo $FUNCNAME
+}
+config()
+{
+echo "configuring nginx server"
+echo $FUNCNAME
+}
+#calling block
+install
+config
+
+
+===============================================================================
+Local and Global variables →
+—---------------------------------------------------------------------------------------------------------------------------------------
+pkg=tomcat            #GLOBAL VARIABLE
+install()
+{
+echo "install $pkg"
+echo function name is $FUNCNAME
+}
+config()
+{
+pkg=nginx          #LOCAL VARIABLE
+echo "config the $pkg"
+echo $FUNCNAME
+}
+install
+config
+
+
+
+===============================================================================
+1.Array :
+------------------------------------------------------------------------------------------------------------------------------------------
+An array is a collection of items of some data type stored at a contiguous memory location...
+example :
+------------------------------------------------------------------------------------------------------------------------------------------
+#!/bin/bash
+arr=(sak jsp mysore goa)
+echo ${arr[@]:1}  # → start from 1st index
+echo ${arr[@]:2}  # → start from 2st index
+echo ${arr[0]} # → to print particular index value
+echo ${arr[2]}
+echo ${!arr[@]} # → to print all array index numbers
+—----------------------------------------------------------------------------------------------------------------------------
+
+
+#!/bin/bash
+for i in /etc/s*. conf do
+if [[ -f "$i" ]]
+then
+echo $i
+fi
+done
+7:15
+To fetch files in the etc folder that are started with s and ending with an extension of . Conf
+
+

@@ -1,0 +1,211 @@
+
+   
+In play-book we have 3 sections
+1) Target section
+2) Task section
+3) Variable section
+
+
+Writing codes in yAML language
+_____________________________________________________________________________________________________________________________________
+1) variable playbook
+
+a) vi variable.yml
+---  
+- hosts: demo
+  user: ansible
+  become: yes
+  connection: ssh
+  vars:
+    pkgname: httpd
+  tasks:
+    - name: install httpd on linux machine
+      action: yum name='{{pkgname}}' state=removed
+
+b) ansible-playbook variable.yml
+
+
+2) Task playbook:- to perform task
+
+a) vi task.yml
+---  
+- hosts: demo
+  user: ansible
+  become: yes
+  connection: ssh
+  tasks:
+    - name: install httpd on linux machine
+      action: yum name=httpd state=install                                        //present
+
+b) ansible-playbook task.yml
+
+
+3) Target playbook:- used to establish connection to our hosts/nodes.
+
+a) vi target.yml
+---  
+- hosts: demo
+  user: ansible
+  become: yes
+  connection: ssh
+
+b) ansible-playbook target.yml
+ 
+------------------------------------------------------------------------------------------------------------------------------------------
+Handler playbook:- used as notifier, to notify the task complition.
+------------------------------------------------------------------------------------------------------------------------------------------
+a]vi handler.yml
+--- 
+- hosts: demo
+  user: ansible
+  become: yes
+  connection: ssh
+  tasks:
+    - name: install httpd on linux
+      action: yum name=httpd state=present
+      notify: restart httpd
+  handlers:
+    - name: restart httpd
+      action: service name=httpd state=started
+
+b] 
+---
+ - hosts: demo
+   user: ansible
+   become: yes
+   connection: ssh
+   tasks:
+       - name: install httpd on linux
+         action: yum name=httpd state=present
+         notify: restart httpd
+   handlers:
+       - name: restart httpd
+         action: service name=httpd state=restarted.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+LOOP:- If user wanna do any task repetitively, to overcome that repetitive task we use loop
+____________________________________________________________________________________________________________
+1) vi loop.yml
+---                                                       # my loops playbook
+- hosts: demo
+  user: ansible
+  become: yes
+  connection: ssh
+  tasks:
+    - name: add list of users in my nodes
+      user: name='{{item}}' state=absent
+      with_items:
+        - ajit
+        - mahantesh
+        - shannu
+        - supriya
+
+2) To check whether commands are working or not (also called as drp run)
+
+   ansible-playbook loop.yml --check
+
+_________________________________________________________________________________________________________________________________________
+To run based on OS:-
+_________________________________________________________________________________________________________________________________________
+
+--- # my condition playbook
+- hosts: demo
+  user: ansible
+  become: yes
+  connection: ssh
+  tasks:
+     - name: install git on Debian family
+       command: apt-get -y install git
+       when: ansible_os_family == "Debian"
+     - name: install git on RedHat Family
+       command: yum install git -y
+       when: ansible_os_family == "RedHat"
+
+__________________________________________________________________________________________________________________________________________
+Encryption and Decryption
+__________________________________________________________________________________________________________________________________________
+ansible vault:-
+---------------
+It is an ansible feature that helps you encrypt confidential information without compromising security.
+(OR)
+All the data written inside this will be encrypted.
+
+By two ways you can encrypt data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1) ansible-vault encrypt <file.yml>			//to secure the data we use encryption
+           (or)
+   ansible-vault create <file.yml>
+   new password:
+   confirm password:
+
+2) To edit file
+ansible-vault edit <file.yml>
+
+3) To reset password
+ansible-vault rekey <file.yml>
+new vault password:
+confirm new vault password:
+
+4)ansible-vault decrypt <file.yml> 			//to decode the encrypted date
+
+
+==========================================================================================================================================
+ commands:
+------------
+
+1. sudo yum install httpd -y//to install hhtpd in ec2-user
+2. exit//to come out of the present user
+3. which httpd//to know httpd is installed or not
+4. ssh 172.31.34.151(private ipv4)//to loggin as node
+  
+   11  ansible all -m ping
+   12  ansible demo -a "free -m"
+   13  ansible demo -a "ls"
+   14  ansible demo -a "ls -a"
+   15  ansibe demo -a "free -m"
+   16  ansible demo -a "free -m"
+   17  ansible demo -a "uptime"
+   18  ansible demo -a uptime
+   19  ansible demo -a free -m
+   20  ansible demo -a uptime
+   21  ansible demo -a "pwd"
+   22  ansible demo -a "touch java.txt"
+   23  ansible demo -a "ls"
+   24  ansible demo[0] -a "ls"
+   25  ansible demo[0] -a "touch index0"
+   26  ls
+   27  ansible demo[0] -a "ls"
+   28  ansible demo[0] -a "rm -rf index0"
+   29  ansible demo[0] -a "ls"
+   30  ansible demo[1] -a "touch index1"
+   31  ansible demo[1] -a "ls"
+   35  ansible demo  -a "which httpd"
+   36  ansible demo  -a "sudo which httpd"
+   37  ansible demo  -b -a "sudo which httpd"
+   38  ansible demo   -a "yum install -y httpd"
+   39  ansible demo  -b  -a "sudo yum install httpd -y"
+   40  ansible demo    -a "sudo yum install httpd -y"
+   41  ansible demo  -b -a "sudo yum install httpd -y"
+   42  ansible demo -b -a "sudo yum install httpd -y"
+   43  ansible demo -a "which httpd"
+   44  ansible demo -b -a "which httpd"
+   45  ssh ansible@172.31.46.117
+   46  ssh 172.31.46.117
+   47  ansible demo -b -a "sudo yum remove httpd -y"
+   48  ansible demo  -a " yum install  httpd -y"
+   49  ansible demo  -a "sudo  yum install  httpd -y"
+   50  ansible demo -b  -a " yum remove  httpd -y"
+   51  ansible demo -b  -a " yum install  httpd -y"
+
+___________________________________________________________________________________________________
+System information commands:-
+___________________________________________________________________________________________________
+   1.  ansible demo -m setup
+   2.  ansible demo -m setup -a "filter=ansible_os_family"
+   3.  ansible demo -m setup -a "filter=ansible_memory_mb"
+
+______________________________________________________________________________________________
+module command:-
+______________________________________________________________________________________________
+   1.  ansible demo -b -m command -a uptime		//to get to know the uptime of the system
+   2.  ansible demo -b -a "which httpd"

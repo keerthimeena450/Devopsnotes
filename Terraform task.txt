@@ -1,0 +1,161 @@
+vi vars.tf
+
+variable "AWS_REGION" {    
+    default = "eu-west-2"
+}
+
+vi provider.tf
+
+provider "aws" {
+    region = "${var.AWS_REGION}"
+}
+
+vi vpc.tf
+
+resource “aws_vpc” “prod-vpc” {
+    cidr_block = “10.0.0.0/16”
+    enable_dns_support = “true” #gives you an internal domain name
+    enable_dns_hostnames = “true” #gives you an internal host name
+    enable_classiclink = “false”
+    instance_tenancy = “default”    
+    
+    tags {
+        Name = “prod-vpc”
+    }
+}
+resource “aws_subnet” “prod-subnet-public-1” {
+    vpc_id = “${aws_vpc.prod-vpc.id}”
+    cidr_block = “10.0.1.0/24”
+    map_public_ip_on_launch = “true” //it makes this a public subnet
+    availability_zone = “eu-west-2a”
+    tags {
+        Name = “prod-subnet-public-1”
+    }
+}
+
+vi network.tf
+
+resource "aws_internet_gateway" "prod-igw" {
+    vpc_id = "${aws_vpc.prod-vpc.id}"
+    tags {
+        Name = "prod-igw"
+    }
+}
+resource "aws_route_table" "prod-public-crt" {
+    vpc_id = "${aws_vpc.main-vpc.id}"
+    
+    route {
+        //associated subnet can reach everywhere
+        cidr_block = "0.0.0.0/0" 
+        //CRT uses this IGW to reach internet
+        gateway_id = "${aws_internet_gateway.prod-igw.id}" 
+    }
+    
+    tags {
+        Name = "prod-public-crt"
+    }
+}
+resource "aws_route_table_association" "prod-crta-public-subnet-1"{
+    subnet_id = "${aws_subnet.prod-subnet-public-1.id}"
+    route_table_id = "${aws_route_table.prod-public-crt.id}"
+}
+resource "aws_security_group" "ssh-allowed" {
+    vpc_id = "${aws_vpc.prod-vpc.id}"
+    
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        // This means, all ip address are allowed to ssh ! 
+        // Do not do it in the production. 
+        // Put your office or home address in it!
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    //If you do not add this rule, you can not reach the NGIX  
+    ingress {
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    tags {
+        Name = "ssh-allowed"
+    }
+}
+
+vi vars.tf
+
+variable "AMI" {
+    type = "map"
+    
+    default {
+        eu-west-2 = "ami-03dea29b0216a1e03"
+        us-east-1 = "ami-0c2a1acae6667e438"
+    }
+}
+resource "aws_instance" "web1" {
+    ami = "${lookup(var.AMI, var.AWS_REGION)}"
+    instance_type = "t2.micro"
+    # VPC
+    subnet_id = "${aws_subnet.prod-subnet-public-1.id}"
+    # Security Group
+    vpc_security_group_ids = ["${aws_security_group.ssh-allowed.id}"]
+    # the Public SSH key
+    key_name = "${aws_key_pair.london-region-key-pair.id}"
+    # nginx installation
+    provisioner "file" {
+        source = "nginx.sh"
+        destination = "/tmp/nginx.sh"
+    }
+    provisioner "remote-exec" {
+        inline = [
+             "chmod +x /tmp/nginx.sh",
+             "sudo /tmp/nginx.sh"
+        ]
+    }
+    connection {
+        user = "${var.EC2_USER}"
+        private_key = "${file("${var.PRIVATE_KEY_PATH}")}"
+    }
+}
+// Sends your public key to the instance
+resource "aws_key_pair" "london-region-key-pair" {
+    key_name = "london-region-key-pair"
+    public_key = "${file(var.PUBLIC_KEY_PATH)}"
+}
+
+terraform plan -out terraform.out
+terraform apply terraform.out
+
+https://medium.com/@aliatakan/terraform-create-a-vpc-subnets-and-more-6ef43f0bf4c1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

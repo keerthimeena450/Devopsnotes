@@ -1,0 +1,39 @@
+
+
+1. yum update -y
+2. yum install docker -y
+3. yum install git -y
+4. service docker start
+5. service docker status
+6. useradd dockeradmin
+7. passwd dockeradmin
+8. usermod -aG docker dockeradmin
+9. su - dockeradmin
+
+10. vi Dockerfile
+
+(copy and paste below code)
+
+### vi Dockerfile
+# Pull base imageuseradd
+From tomcat:8-jre8
+# Maintainer
+MAINTAINER "sak"
+# copy war file on to container
+COPY ./cicd-for-webapp.war /usr/local/tomcat/webapps
+
+ 
+jenkins :
+-------------------------------------------------------------------------
+Src --> git -> paste git repository url
+
+build step : in jenkins --> exec command
+docker stop qspider;
+docker rm -f qspider;
+docker image rm -f qspider;
+cd /home/dockeradmin;
+docker build -t qspider
+
+post build step : in jenkins --> exec command
+docker run -it -d --name qspider -p 8090:8080 qspider
+to check --> <public-IP>:8090/project-3-ssh-docker-webapp/

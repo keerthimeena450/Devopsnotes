@@ -1,0 +1,503 @@
+Empty Dir(directory):-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1. Launch two instances(AMI- ubuntu, instance type-t2.micro)
+    a) Worker node
+    b) Master node
+
+2. vi empty.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume
+spec:
+  containers:
+  - name: c00
+    image: centos
+    command: ["/bin/bash", "-c", "sleep 15000"]
+    volumeMounts:
+      - name: skillrary
+        mountPath: "/tmp/qspider"
+  - name: c01
+    image: centos
+    command: ["/bin/bash", "-c", "sleep 10000"]
+    volumeMounts:
+      - name: skillrary
+        mountPath: "/tmp/jspider"
+  volumes:
+  - name: skillrary
+    emptyDir: {}
+
+
+3. kubectl get nodes
+
+4. kubectl apply -f empty.yml
+
+5. kubectl get pods
+
+6. kubectl exec volume<pod name> -it -c qsp<container name> -- /bin/bash
+
+7. ls
+
+8. cd tmp/  -->ls
+
+9. cd qspider -->ls
+
+10. exit
+
+11. kubectl get pods
+
+12. kubectl get rc 
+
+
+
+Host Path:-
+------------------------------------------------------------------------------------------------------------------------------------------
+1. Launch two instances(AMI- ubuntu, instance type-t2.micro)
+    a) Worker node
+    b) Master node
+
+2. vi host.yml            <paste it in MASTER>
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo
+spec:
+  containers:
+  - image: centos
+    name: sample
+    command: ["/bin/bash", "-c", "sleep 15000"]
+    volumeMounts:
+    - mountPath: /tmp/hostpath
+      name: skillrary
+  volumes:
+  - name: skillrary
+    hostPath:
+      path: /tmp/data
+
+
+worker node :
+-------------------------------------------------------------------------
+   1  ls --> cd tmp/
+   2  ls
+   3  cd data/
+   4  ls
+   5  echo "subbu wait" > file.txt
+   6  ls
+   7  ll
+   8  pwd
+   9  touch suubu
+   10  exit
+
+
+master node :
+--------------------------------------------------------------------------
+vi host.yml
+   1.  clear
+   2.  cat host.yml
+   3.  kubectl apply -f host.yml
+   4.  kubectl get pods
+   5.  ls
+   6.  kubectl exec demo -it -- /bin/bash
+
+
+
+NFS (Network File Sharing System) :
+------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Launch 3 instances Master, Worker (AMI- ubuntu, Instance type- t2.medium) 
+   nfs (AMI- ubuntu, Instance type- t2.micro)
+
+2. nfs instance req:
+- ubuntu
+- t2.micro
+- all traffic
+
+run all the commands in nfs node :
+- sudo apt update -y
+- sudo apt install nfs-kernel-server -y
+- sudo mkdir -p /mnt/sak
+- sudo chown -R nobody:nogroup /mnt/sak/
+- sudo vim /etc/exports
+- insert this content to /etc/exports → as below
+--> /mnt/sak *(rw,sync,no_subtree_check)
+  if you face any security issues then use below content
+--> /mnt/sak *(rw,sync,no_subtree_check,insecure)
+- sudo exportfs -a
+- to check exports
+--> sudo exportfs -v or showmount -e
+- sudo systemctl restart nfs-kernel-server
+
+
+Step 2 : NFS-Client (in Worker Nodes)
+- sudo apt install nfs-common -y
+- showmount -e  <nfs private IP>→
+Example : showmount -e 172.31.32.58
+
+
+MASTER :
+------------------------------------------------------------------------
+1. vi pv.yml
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs-pv1
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 172.31.40.166 #nfs server private IP
+    path: "/mnt/sak"
+:wq
+
+
+2. vi pvc.yml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nfs-pv1
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+:wq
+
+
+3. vi deploy.yml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: nginx-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx
+  template:
+    metadata:
+      labels:
+        run: nginx
+    spec:
+      volumes:
+      - name: www
+        persistentVolumeClaim:
+          claimName: pvc-nfs-pv1
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+:wq
+
+
+run commands in master node :
+---------------------------------------------------------------------------------
+    1. vi pv.yml
+    2. vi pvc.yml
+    3. vi deploy.yml
+    4. kubectl apply -f pv.yml       (static)
+    5. kubectl apply -f pvc.yml      (dynamic)
+    6. kubectl apply -f deploy.yml
+    7. kubectl get pvc
+    8. kubectl get deploy
+    9. kubectl get all
+    10.kubectl get all
+    11.kubectl exec -it deployment.apps/nginx-deploy -- /bin/bash
+    12.kubectl get pods
+    13.kubectl delete pod nginx-deploy-795db8dfd6-f5wwh
+    14. kubectl get pods
+    15.kubectl get deploy
+    16.kubectl get pods
+    17.kubectl exec nginx-deploy-795db8dfd6-rtdwl -it -- /bin/bash
+    18.ls
+    19.cd usr/
+    20.ls
+    21.cd share
+    22.ls
+    23.cd nginx
+    24.ls
+    25.cd html
+    26.ls
+    27.touch file.txt
+    28.ls
+    29.echo "checking" >sample.txt
+    30.ls
+    31.exit
+
+   
+
+run commands on nfs :
+---------------------------------------------------
+	1. ls
+	2. cd /mnt/sak
+	3. ls
+	4. cat file.txt
+
+(OR)
+   	1.  ls
+   	2.  cd /mnt/sak
+   	3.  cd ..
+   	4.  ls
+   	5.  cd ..
+   	6.  ls
+   	7.  cd mnt
+   	8.  ls
+   	9.  cd sak
+   	10.  ls
+
+
+
+configuration mapping
+------------------------------------------------------------------------------------------------------------------------------------------
+
+1. vi sample.conf
+add any data
+:wq
+
+2. vi pod.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myconfig
+spec:
+  containers:
+  - name: c1
+    image: centos
+    command: ["/bin/bash", "-c", "while true; do echo welcome to k8s; sleep 5 ; done"]
+    volumeMounts:
+      - name: testconfigmap
+        mountPath: "/tmp/config"   # the config files will be mounted as ReadOnly by default here
+  volumes:
+  - name: testconfigmap
+    configMap:
+       name: mymap   # this should match the config map name created in the first step
+       items:
+       - key: sample.conf
+         path: sample.conf
+
+   3.   vi sample.conf   --> type anything in next line
+   4.   ls
+   5.   vi pod.yml
+   6.   ls
+   7.   kubectl create configmap mymap --from-file=sample.conf
+   8.   kubectl get configmap
+    9.  cat sample.conf
+   10.  kubectl describe configmap mymap
+   11.  kubectl get po
+   12.  vi pod.yml
+   13.  kubectl apply -f pod.yml
+   14.  kubectl get po
+   15.  kubectl exec myconfig -it -- /bin/bash
+   16.  ls -> cd /tmp
+   17.  cat sample.conf
+   18.  vi sample.conf
+   19.  kubectl exec myconfig -it -- /bin/bash
+   20.  kubectl get po
+   21.  cat sm
+   22.  cat sample.conf
+   23.  kubectl get configmap
+   24.  kubectl delete configmap mymap
+   25.  cat sample.conf
+   26.  kubectl create configmap mymap --from-file=sample.conf
+   27.  kubectl get po
+   28.  kubectl exec -it myconfig -- /bin/bash
+   29.  kubectl get po
+   30.  kubectl delete -f pod.yml
+   31.  kubectl get config map
+   32.  kubectl get configmap
+   33.  kubectl delete configmap mymap
+
+inside pods
+[root@myconfig config]# history
+    1  ls
+    2  cd tmp/
+    3  ls
+    4  cd config/
+    5  ls
+    6  cat sample.conf
+    7  history
+
+[root@myconfig config]# exit
+
+
+
+secret object k8s
+----------------------------------------------------------------------------------------------------------------------------------------
+1. vi deploy.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysecret
+spec:
+  containers:
+  - name: c1
+    image: centos
+    command: ["/bin/bash", "-c", "while true; do echo welcome to devops; sleep 5 ; done"]
+    volumeMounts:
+      - name: testsecret
+        mountPath: "/tmp/mysecrets"   # the secret files will be mounted as ReadOnly by default here
+  volumes:
+  - name: testsecret
+    secret:
+       secretName: mysecret
+
+ 2. echo "sak" > username.txt; echo "sak123" > password.txt
+ 3. ls
+ 4. cat username.txt
+ 5. cat password.txt
+ 6. ls
+ 7. kubectl create secret generic mysecret --from-file=username.txt --from-file=password.txt
+ 8. kubtctl get secret
+ 9. kubectl get secret
+ 10.ls
+ 11.vi deploy.yml
+ 12.kubectl apply -f deploy.yml
+ 13.kubectl get po
+ 14.kubectl exec -it mysecret -- /bin/bash
+ 15.kubectl get secret
+ 16.kubectl delete secret mysecret
+ 17.kubectl delete -f deploy.yml
+
+
+inside pod[root@mysecret mysecrets]# history
+    1  ls
+    2  cd tmp/
+    3  ls
+    4  cd mysecrets/
+    5  ls
+    6  cat password.txt
+    7  cat username.txt
+  
+[root@mysecret mysecrets]# exit
+
+
+
+creating own namespace
+---------------------------------------------------------------------------------------------------------------------------------------
+To create namespace :
+
+1. vi devns.yml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: dev
+   labels:
+     name: dev
+:wq
+
+Commands :
+-----------------------------------------------
+kubectl apply -f devns.yml
+
+To get namespace : kubectl get ns   (or)   kubectl get namespace
+
+To create a pod :
+-----------------------------------------------
+  1. vi pod1.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo welcome to k8s; sleep 5 ; done"]
+:wq
+
+   2.  kubectl apply -f devns.yml
+   3.  kubectl get namespace
+   4.  vi pod.yml
+   5.  kubeclt apply -f pod.yml
+   6.  kubectl apply -f pod.yml
+   7.  kubectl get po
+   8.  kubectl get pods -n dev
+   9.  kubectl get po
+   10.  kubectl delete -f pod.yml
+   11.  kubectl get pods
+   12.  kubectl get pods -n dev
+   13.  kubectl apply -f pod.yml  -n dev
+   14.  kubectl get po
+   15.  kubectl get po -n dev
+   16.  kubectl delete -f pod.yml
+   17.  kubectl delete -f pod.yml -n dev
+   18.  kubectl get ns
+   19.  kubectl delete ns dev
+   20.  rm -rf devns.yml
+   21.  rm -rf pod.yml
+
+
+-> vi resource.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resources
+spec:
+  containers:
+  - name: resource
+    image: centos
+    command: ["/bin/bash", "-c", "while true; do echo hello good evening; sleep 5 ; done"]
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+:wq
+
+  -> vi resource.yml
+  ->  kubectl apply -f resource.yml
+  ->  kubectl get po
+  ->  kubectl describe pod resources
+  ->  kubectl delete -f resource.yml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

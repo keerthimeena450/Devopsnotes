@@ -1,0 +1,477 @@
+1) yaml code to create pod with one container:-
+------------------------------------------------------------------------------------------------------------------------------------------
+a) vi pod.yml
+
+b) kind: Pod
+apiVersion: v1
+metadata:
+  name: jspider
+spec:
+  containers:
+    - name: sample1
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo hello all; sleep 2 ; done"]
+  restartPolicy: Never         # Defaults to Always
+
+c) kubectl apply -f pod.yml  :-To rum yml code
+
+d) kubectl get pods  :-To know more about pods
+
+e) kubectl get pods -o wide :- To know IP address of the pod
+
+f) kubectl describe pod jspider<podname> :- To get pod description
+
+g) To run pod :-(If pod is connected with only one container)
+   kubectl logs -f jspider<podname>
+
+h) To run pod :-(If pod is connected with multiple container)
+   kubectl logs -f jspider<pod name> -c <container name>
+
+i) To delete pod:-
+   kubectl delete -f <pod.yml>	
+
+
+
+
+
+2) yaml code to create pod with multiple container:-
+------------------------------------------------------------------------------------------------------------------------------------------
+a) vi pod1.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: devops
+spec:
+  containers:
+    - name: sample1
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo Devops; sleep 2 ; done"]
+    - name: sample2
+      image: centos
+      command: ["/bin/bash", "-c", "while true; do echo dev; sleep 2 ; done"]
+
+b) kubectl apply -f pod.yml  :-To rum yml code
+
+c) kubectl get pods  :-To know more about pods
+
+d) kubectl get pods -o wide :- To know IP address of the pod
+
+e) kubectl describe pod jspider<podname> :- To get pod description
+
+f) To run pod :-(If pod is connected with only one container)
+   kubectl logs -f jspider<podname>
+
+g) To run pod :-(If pod is connected with multiple container)
+   kubectl logs -f jspider<pod name> -c <container name>
+
+h) To delete pod:-
+   kubectl delete -f <pod.yml>	
+
+
+
+
+3) yaml code to create pod with container using nginx:-
+------------------------------------------------------------------------------------------------------------------------------------------
+a) vi lab.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jspider
+spec:
+  containers:
+  - name: testfreshers
+    image: nginx
+    ports:
+    - containerPort: 80
+
+b) kubectl apply -f pod.yml  :-To rum yml code
+
+c) kubectl get pods  :-To know more about pods
+
+d) kubectl get pods -o wide :- To know IP address of the pod
+
+e) kubectl describe pod jspider<podname> :- To get pod description 
+
+f) curl <IP address of pod> :- To get to know pods are running or not
+
+g) To run pod :-(If pod is connected with only one container)
+   kubectl logs -f jspider<podname>
+
+h) To delete pod:-
+   kubectl delete -f <pod.yml>	
+
+
+
+4) code to create pod with label:-
+------------------------------------------------------------------------------------------------------------------------------------------
+a) vi rc.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testfreshers
+  labels:
+    department: developer
+    batch: jddw3
+spec:
+    containers:
+       - name: demo
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo testfreshers; done"]
+
+b) kubectl apply -f <lab.yml>
+
+c) kubectl get pods
+
+d) kubectl label pod testfreshers<pod name> name=sak<any_name>
+
+e) kubectl get pods --show-labels
+
+f) kubectl get pods -l department=developer
+
+
+
+5)code to create pod with replication controller:-
+------------------------------------------------------------------------------------------------------------------------------------------
+
+a) vi rc.yml
+
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: skillrary
+spec:
+  replicas: 2
+  selector:
+    app: nginx
+  template:
+    metadata:
+      name: abc
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: xyz
+        image: nginx
+        ports:
+        - containerPort: 80
+
+b) kubectl get pods
+
+c) kubectl delete -f lab.yml
+
+d) kubectl get pods
+
+e) kubectl apply -f rc.yml
+
+f) kubectl get pods
+
+g) kubectl delete pod <pod name>
+
+h) kubectl get <rc>
+
+i) kubectl delete pod <pod name>skillrary-f9bjp :- To delete replicated pod
+
+j) kubectl scale --replicas=8 rc -l app=nginx :- To know scale up the replication (It will create 7 extra pods total 8(1 previous one+ 7 newly created)
+
+k) kubectl get pods
+
+
+
+6) Code to create pod with Replica set :-
+-----------------------------------------------------------------------------------------------------------------------------------------
+a) vi rs.yml
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+kind: ReplicaSet
+apiVersion: apps/v1
+metadata:
+  name: rs
+spec:
+  replicas: 2
+  selector:
+    matchExpressions:
+      - {key: myname, operator: In, values: [qspider, jspider, pyspider]}
+      - {key: env, operator: NotIn, values: [skillrary]}
+  template:
+    metadata:
+      name: sak
+      labels:
+        myname: qspider
+    spec:
+     containers:
+       - name: abc
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo Hello-world; sleep 3 ; done"]
+
+b) kubectl get nodes
+
+c) kubectl apply -f rs.yml
+
+d) kubectl get pods
+
+e) kubectl scale --replicas=5 rs<should type rs-replica set> rs<pod name> 
+
+
+
+
+Rollback :-
+------------------------------------------------------------------------------------------------------------------------------------------
+a)	vi deploy.yml
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+   name: skillrary
+spec:
+   replicas: 2
+   selector:
+    matchLabels:
+     name: deployment
+   template:
+     metadata:
+       name: qspider
+       labels:
+         name: deployment
+     spec:
+      containers:
+        - name: abc
+          image: ubuntu
+          command: ["/bin/bash", "-c", "while true; do echo skillrary; sleep 5; done"]
+
+
+       kubectl apply -f deploy.yml
+   16  kubectl get pods
+   17  kubectl scale --replicas=5 deploy skillrary
+   18  kubectl get deploy skillrary
+   19  kubectl get pods
+   20  kubectl scale --replicas=1 deploy skillrary
+   21  kubectl get pods
+   22  kubectl logs -f skillrary-7688f4b8b5-9t7nh
+   23  kubectl get pods
+   24  kubectl exec skillrary-7688f4b8b5-9t7nh -- cat /etc/os-release
+   25  vi deploy.yml
+   26  kubectl get pods
+   27  kubectl apply -f deploy.yml
+   28  clear
+   29  kubectl get pods
+   30  clear
+   31  kubectl get pods
+   32  kubectl logs -f skillrary-648854c68f-cn94p
+   33  kubectl get pods
+   34  kubectl exec skillrary-648854c68f-cn94p -- cat /etc/os-release
+   35  kubectl get pods
+   36  kubectl rollout status deployment skillrary
+   37  kubectl rollout undo deploy skillrary
+   38  kubectl get pods
+   39  clear
+   40  kubectl get pods
+   41  kubectl logs -f skillrary-7688f4b8b5-cjsbk
+   42  kubectl get pods
+   43  kubectl exec skillrary-7688f4b8b5-cjsbk -- cat /etc/os-release
+   44  kubectl delete -f deploy.yml
+   45  kubectl get po
+
+
+
+
+Establish communication between one pod with one container :-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+vi pod.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: qspider
+spec:
+  containers:
+    - name: abc
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo Hello Devils; sleep 5 ; done"]
+    - name: xyz
+      image: httpd
+      ports:
+       - containerPort: 80
+
+clear
+   14  kubectl apply -f pod.yml
+   15  kubectl get pods
+   16  cat pod.yml
+   17  kubectl get pods -o wide
+   18  kubectl exec qspider -it -c abc -- /bin/bash
+   19  kubectl get pods -o wide
+
+
+Establish communication between two pod with two containers :-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+a) vi pod1.yml
+
+vi pod1.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+
+b) vi pod2.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd
+spec:
+  containers:
+  - name: httpd
+    image: httpd
+    ports:
+    - containerPort: 80
+
+c) kubectl apply -f pod1.yml
+
+d) kubectl apply -f pod2.yml
+
+e) kubectl get pods
+
+f) kubectl get pods -o wide
+
+g) curl <IP of pod1:80>
+
+h) curl <IP of pod2.80>
+
+
+
+
+``````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
+a) vi deploy.yml
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+   name: skillrary
+spec:
+   replicas: 1
+   selector:
+    matchLabels:
+     name: deployment
+   template:
+     metadata:
+       name: vip
+       labels:
+         name: deployment
+     spec:
+      containers:
+        - name: abcd
+          image: httpd
+          ports:
+          - containerPort: 80
+
+b) vi service.yml
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: demoservice
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    name: deployment
+  type: ClusterIP
+ kubectl get pods
+
+c) kubectl get svc
+
+d)  curl 10.105.227.200:80
+
+e)  kubectl describe svc demoservice
+
+f)  kubectl get pods -o wide
+
+g)  kubectl describe pod skillrary-645658c5ff-bjlzh
+
+h)  kubectl delete -f deploy.yml
+
+i)  kubectl delete -f service.yml
+
+
+``````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
+a) vi deploy.yml
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+   name: jspider
+spec:
+   replicas: 1
+   selector:
+    matchLabels:
+     name: deployment
+   template:
+     metadata:
+       name: happy
+       labels:
+         name: deployment
+     spec:
+      containers:
+        - name: abcd
+          image: nginx
+          ports:
+          - containerPort: 80
+
+
+b) vi service.yml
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: demoservice
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    name: deployment
+  type: NodePort
+
+ c)  vi deploy.yml
+
+ d)  vi service.yml
+
+ e)  kubectl apply -f deploy.yml
+
+ f)  kubectl apply -f service.yml
+
+ g)  kubectl get pods
+
+ h)  kubectl get svc
+
+ i)  kubectl describe svc demoservice
+
+ j)  kubectl delete -f deploy.yml
+
+ k)  kubectl delete -f service.yml
+
+http://ec2-3-111-32-176.ap-south-1.compute.amazonaws.com:31686/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

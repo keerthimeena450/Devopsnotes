@@ -1,0 +1,124 @@
+
+[ec2-user@ip-172-31-0-198 ~]$ history
+    1  vi jenkins.sh
+    2  sh jenkins.sh
+    3  sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+    4  sudo su -
+    5  su - dockeradmin
+    6  visudo
+    7  sudo su -
+    8  ls
+    9  sudo su -
+   10  ls -a
+   11  sudo su -
+   12  ls
+   13  sudo su -
+   14  history
+[ec2-user@ip-172-31-0-198 ~]$ sudo su -
+Last login: Mon Jul  3 12:21:22 UTC 2023 on pts/2
+[root@ip-172-31-0-198 ~]# history
+    1  yum update -y
+    2  yum install docker -y
+    3  yum install git -y
+    4  service docker start
+    5  service docker status
+    6  useradd dockeradmin
+    7  passwd dockeradmin
+    8  usermod -aG docker dockeradmin
+    9  su - dockeradmin
+   10  exit
+   11  visudo
+   12  vi /etc/ssh/sshd_config
+   13  su - dockeradmin
+   14  service sshd restart
+   15  systemctl sshd status
+   16  systemct status sshd
+   17  systemctl restart sshd
+   18  systemctl status sshd
+   19  su - dockeradmin
+   20  ls
+   21  exit
+   22  ls
+   23   su - dockeradmin
+   24  exit
+   25  history
+[root@ip-172-31-0-198 ~]# su - dockeradmin
+Last login: Mon Jul  3 12:23:09 UTC 2023 on pts/2
+[dockeradmin@ip-172-31-0-198 ~]$ history
+    1  vi Dockerfile
+    2  sudo su -
+    3  exit
+    4  visudo
+    5  exit
+    6  ls -a
+    7  exit
+    8  ls -a
+    9  ssh-keygen
+   10  ls -a
+   11  cd .ssh
+   12  ssh-copy-id dockeradmin@172.31.0.198
+   13  ls
+   14  exit
+   15  ls
+   16  vi Dockerfile
+   17  ssh-keygen
+   18  ls -a
+   19  cd .ssh
+   20  ssh-copy-id dockeradmin@172.31.0.198
+   21  ssh dockeradmin@172.31.0.198
+   22  vi file.txt
+   23  ls -a
+   24  exit
+   25  ls
+   26  ls -a
+   27  vi Dockerfile
+   28  ls
+   29  ls -a
+   30  cd Dockerfile
+   31  vi Dockerfile
+   32  ssh-keygen
+   33  ls
+   34  ls -a
+   35  cd .ssh
+   36  ssh-copy-id dockeradmin@172.31.0.198
+   37  ssh 'dockeradmin@172.31.0.198'
+   38  ls
+   39  exit
+   40  ls -a
+   41  vi Dockerfile
+   42  ls
+   43  ls
+   44  exit
+   45  ssh-keygen
+   46  ls -a
+   47  cd .ssh
+   48  ssh-copy-id dockeradmin@172.31.0.198
+   49  ssh dockeradmin@172.31.0.198
+   50  ls
+   51  compgen -u
+   52  ls
+   53  pwd
+   54  cd
+   55  ls
+   56  cat Dockerfile
+   57  cat cicd-for-webapp.war
+   58  xterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorxterm-256colorls
+   59  ls
+   60  cat file.txt
+   61  rm file.txt
+   62  ls
+   63  exit
+   64  ls
+   65  vi Dockerfile
+   66  ls
+   67  ssh-keygen
+   68  ls -a
+   69  cd .ssh
+   70  ssh-copy-id ansible@172.31.8.179
+   71  ssh 'ansible@172.31.8.179'
+   72  ssh-copy-id dockeradmin@172.31.8.179
+   73  exit
+   74  ssh -keygen
+   75  ssh-keygen
+   76  exit
+   77  history

@@ -1,0 +1,13 @@
+while installing tomcat 9:-
+------------------------------------------------------------------------------------------------------------------------------------------
+
+vi tomcat-user.xml
+
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="manager-jmx"/>
+<role rolename="manager-status"/>
+<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+
+
+copy paste the code after role before tomcat-user
